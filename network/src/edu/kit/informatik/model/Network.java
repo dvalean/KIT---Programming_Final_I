@@ -1,82 +1,24 @@
 package edu.kit.informatik.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class Network {
-    private static final String OPEN_BRACKET = "(";
-    private static final String CLOSE_BRACKET = ")";
-    private static final String SEPARATOR = " ";
+import edu.kit.informatik.model.tree.Tree;
 
-    private Node<IP> root;
+public class Network {
+    private final List<Tree> network = new ArrayList<>();
 
     public Network(final IP root, final List<IP> children) {
-        this.root = initNetwork(root, children);
+        this.network.add(new Tree(root, children));
     }
 
     public Network(final String bracketNotation) throws ParseException {
-        this.root = fromString(findInnerString(bracketNotation));
-    }
-
-    private Node<IP> initNetwork(IP parent, List<IP> children) {
-        Node<IP> root = new Node<IP>(parent);
-        children.stream().forEach(each -> root.addChild(new Node<IP>(each)));
-
-        return root;
-    }
-
-    private Node<IP> fromString(String s) throws ParseException {
-        int i = 0;
-        Node<IP> root = new Node<IP>(new IP(s.substring(i, ipLength(s))));
-        i += ipLength(s);
-
-        while (i < s.length()) {
-            i++;
-            if (s.charAt(i) == OPEN_BRACKET.charAt(0)) {
-                root.addChild(fromString(findInnerString(s.substring(i))));
-                i += findInnerString(s.substring(i)).length() + 2;
-            } else {
-                root.addChild(new Node<IP>(new IP(s.substring(i, ipLength(s.substring(i)) + i))));
-                i += ipLength(s.substring(i));
-            }
-        }
-
-        return root;
-    }
-
-    private String findInnerString(String s) {
-        int flag = 0;
-
-        for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) == OPEN_BRACKET.charAt(0)) {
-                flag++;
-            } else if (s.charAt(i) == CLOSE_BRACKET.charAt(0)) {
-                flag--;
-            }
-
-            if (flag == 0) {
-                // begin - inclusive (next char after "("), end - exclusive (exactly where ")"
-                // is seen)
-                return s.substring(1, i);
-            }
-        }
-
-        // if flag not 0 there is an error
-
-        return s.substring(1, s.length());
-    }
-
-    private int ipLength(String s) {
-        for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) == SEPARATOR.charAt(0)) {
-                return i;
-            }
-        }
-
-        return s.length();
+        this.network.add(new Tree(bracketNotation));
     }
 
     public boolean add(final Network subnet) {
-        return false;
+        subnet.network.stream().forEach(each -> this.network.add(each));
+        return true;
     }
 
     public List<IP> list() {
@@ -92,23 +34,13 @@ public class Network {
     }
 
     public boolean contains(final IP ip) {
-        return (findNode(this.root, ip) == null) ? false : true;
-    }
-
-    private Node<IP> findNode(Node<IP> root, IP data) {
-        Node<IP> counter = root;
-
-        if (counter.getData().compareTo(data) == 0) {
-            return counter;
-        }
-
-        if (!counter.getChildren().isEmpty()) {
-            for (Node<IP> child : counter.getChildren()) {
-                findNode(child, data);
+        for (Tree tree : this.network) {
+            if (tree.findNode(tree.getRoot(), ip) != null) {
+                return true;
             }
         }
 
-        return null;
+        return false;
     }
 
     public int getHeight(final IP root) {
@@ -124,20 +56,12 @@ public class Network {
     }
 
     public String toString(IP root) {
-        Node<IP> ip = findNode(this.root, root);
-        return toStringRecursion(ip);
-    }
-
-    private String toStringRecursion(Node<IP> root) {
-        String result = root.getData().toString();
-        if (root.getChildren().isEmpty()) {
-            return result;
-        } else {
-            for (Node<IP> child : root.getChildren()) {
-                result += SEPARATOR + toStringRecursion(child);
+        for (Tree tree : this.network) {
+            if (tree.getRoot().getData().compareTo(root) == 0) {
+                return tree.toStringRecursion(tree.getRoot());
             }
         }
 
-        return OPEN_BRACKET + result + CLOSE_BRACKET;
+        return null;
     }
 }
