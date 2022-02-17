@@ -92,7 +92,23 @@ public class Network {
     }
 
     public boolean contains(final IP ip) {
-        return false;
+        return (findNode(this.root, ip) == null) ? false : true;
+    }
+
+    private Node<IP> findNode(Node<IP> root, IP data) {
+        Node<IP> counter = root;
+
+        if (counter.getData().compareTo(data) == 0) {
+            return counter;
+        }
+
+        if (!counter.getChildren().isEmpty()) {
+            for (Node<IP> child : counter.getChildren()) {
+                findNode(child, data);
+            }
+        }
+
+        return null;
     }
 
     public int getHeight(final IP root) {
@@ -108,6 +124,20 @@ public class Network {
     }
 
     public String toString(IP root) {
-        return null;
+        Node<IP> ip = findNode(this.root, root);
+        return toStringRecursion(ip);
+    }
+
+    private String toStringRecursion(Node<IP> root) {
+        String result = root.getData().toString();
+        if (root.getChildren().isEmpty()) {
+            return result;
+        } else {
+            for (Node<IP> child : root.getChildren()) {
+                result += SEPARATOR + toStringRecursion(child);
+            }
+        }
+
+        return OPEN_BRACKET + result + CLOSE_BRACKET;
     }
 }
