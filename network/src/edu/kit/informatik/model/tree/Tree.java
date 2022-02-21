@@ -1,5 +1,6 @@
 package edu.kit.informatik.model.tree;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.kit.informatik.model.IP;
@@ -86,6 +87,21 @@ public class Tree {
         }
 
         return null;
+    }
+
+    public int maxDepth(Node<IP> root) {
+        if (root.getChildren().isEmpty()) {
+            return 0;
+        }
+
+        List<Integer> depth = new ArrayList<>();
+        root.getChildren().stream().forEach(each -> depth.add(1));
+
+        for (int i = 0; i < depth.size(); i++) {
+            depth.set(i, depth.get(i) + maxDepth(root.getChildren().get(i)));
+        }
+
+        return depth.stream().mapToInt(each -> each).max().orElseThrow(null);
     }
 
     public String toStringRecursion(Node<IP> parent) {

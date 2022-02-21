@@ -44,6 +44,12 @@ public class Network {
     }
 
     public int getHeight(final IP root) {
+        for (Tree tree : this.network) {
+            if (tree.getRoot().getData().compareTo(root) == 0) {
+                return tree.maxDepth(tree.getRoot());
+            }
+        }
+
         return 0;
     }
 
