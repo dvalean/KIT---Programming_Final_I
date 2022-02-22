@@ -82,4 +82,18 @@ public class IP implements Comparable<IP> {
 
         return 0;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+
+        IP ip = (IP) o;
+        if (compareTo(ip) == 0) {
+            return true;
+        }
+        
+        return false;
+    }
 }

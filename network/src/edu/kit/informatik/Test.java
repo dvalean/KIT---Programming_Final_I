@@ -3,8 +3,8 @@ package edu.kit.informatik;
 import java.util.List;
 
 import edu.kit.informatik.model.IP;
-import edu.kit.informatik.model.Network;
 import edu.kit.informatik.model.ParseException;
+import edu.kit.informatik.model.network.Network;
 
 public class Test {
     public static void main(String[] args) throws ParseException {
