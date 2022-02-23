@@ -6,7 +6,7 @@ import edu.kit.informatik.model.IP;
 import edu.kit.informatik.model.ParseException;
 import edu.kit.informatik.model.network.Network;
 
-public class Test {
+public class PublicTest {
     public static void main(String[] args) throws ParseException {
         // Construct initial network
         IP root = new IP("141.255.1.133");

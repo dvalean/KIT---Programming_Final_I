@@ -37,15 +37,15 @@ public class Network {
     }
 
     public Network(final String bracketNotation) throws ParseException {
-        this.graph = new Graph(fromString(bracketNotation));
+        this.graph = new Graph(fromString(findInnerString(bracketNotation)));
     }
 
     private List<Edge> fromString(String bracket) throws ParseException {
         List<Edge> edges = new ArrayList<>();
 
-        int i = 1;
+        int i = 0;
         IP source = new IP(bracket.substring(i, ipLength(bracket)));
-        i += ipLength(bracket);
+        i = ipLength(bracket) + 1;
 
         while (i < bracket.length()) {
             if (bracket.charAt(i) == ParseException.getOpenBracket().charAt(0)) {
