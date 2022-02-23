@@ -92,7 +92,7 @@ public class Network {
         return s.length();
     }
 
-    public boolean add(final Network subnet) {
+    public boolean add(final Network subnet) throws ParseException {
         Graph graph = new Graph(this.graph.getEdges());
         graph.addEdges(subnet.graph.getEdges());
 
@@ -153,15 +153,38 @@ public class Network {
         for (IP vertex : vertices) {
             if (vertex.compareTo(root) == 0) {
                 Tree tree = new Tree(vertex, graph);
-                return tree.getLevels(tree.getRoot(), 0, new ArrayList<>());
+                List<List<IP>> levels = tree.getLevels(tree.getRoot(), 0, new ArrayList<>());
+                return sortLevels(levels);
             }
         }
 
         return null;
     }
 
+    private List<List<IP>> sortLevels(List<List<IP>> levels) {
+        for (int i = 0; i < levels.size(); i++) {
+            Collections.sort(levels.get(i));
+        }
+
+        return levels;
+    }
+
     public List<IP> getRoute(final IP start, final IP end) {
-        return null;
+        IP s = null;
+        IP e = null;
+
+        Set<IP> vertices = graph.getAdjMap().keySet();
+        for (IP vertex : vertices) {
+            if (vertex.compareTo(start) == 0) {
+                s = vertex;
+            }
+
+            if (vertex.compareTo(end) == 0) {
+                e = vertex;
+            }
+        }
+
+        return graph.getRoute(s, e, new ArrayList<>(), new ArrayList<>());
     }
 
     public String toString(IP root) {

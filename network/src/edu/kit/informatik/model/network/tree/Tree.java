@@ -1,7 +1,9 @@
 package edu.kit.informatik.model.network.tree;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import edu.kit.informatik.model.IP;
 import edu.kit.informatik.model.network.graph.Graph;
@@ -22,16 +24,27 @@ public class Tree {
     private List<Node> initialization(Node root, Graph graph, List<IP> visited) {
         visited.add(root.getValue());
 
-        List<Node> children = new ArrayList<>();
-
-        for (int i = 0; i < graph.getAdjMap().get(root.getValue()).size(); i++) {
-            if (!visited.contains(graph.getAdjMap().get(root.getValue()).get(i))) {
-                children.add(i, new Node(graph.getAdjMap().get(root.getValue()).get(i)));
-                children.get(i).setParent(root);
-                children.get(i).addChildren(initialization(children.get(i), graph, visited));
+        IP rootIP = null;
+        Set<IP> vertices = graph.getAdjMap().keySet();
+        for (IP vertex : vertices) {
+            if (vertex.compareTo(root.getValue()) == 0) {
+                rootIP = vertex;
             }
         }
 
+        int j = 0;
+        List<Node> children = new ArrayList<>();
+
+        for (int i = 0; i < graph.getAdjMap().get(rootIP).size(); i++) {
+            if (!visited.contains(graph.getAdjMap().get(rootIP).get(i))) {
+                children.add(new Node(graph.getAdjMap().get(rootIP).get(i)));
+                children.get(j).setParent(root);
+                children.get(j).addChildren(initialization(children.get(j), graph, visited));
+                j++;
+            }
+        }
+
+        Collections.sort(children);
         return children;
     }
 

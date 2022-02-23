@@ -5,7 +5,7 @@ import java.util.List;
 
 import edu.kit.informatik.model.IP;
 
-public class Node {
+public class Node implements Comparable<Node> {
     private IP value = null;
     private List<Node> children = new ArrayList<>();
     private Node parent = null;
@@ -43,5 +43,10 @@ public class Node {
 
     public Node getParent() {
         return this.parent;
+    }
+
+    @Override
+    public int compareTo(Node o) {
+        return this.value.compareTo(o.getValue());
     }
 }
