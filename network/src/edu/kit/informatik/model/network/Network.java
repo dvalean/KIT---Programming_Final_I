@@ -3,55 +3,66 @@ package edu.kit.informatik.model.network;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import edu.kit.informatik.model.IP;
 import edu.kit.informatik.model.ParseException;
 import edu.kit.informatik.model.network.graph.Edge;
 import edu.kit.informatik.model.network.graph.Graph;
-import edu.kit.informatik.model.network.tree.Tree;
+import edu.kit.informatik.resources.ExceptionMessage;
 
+/**
+ * Represents a Network.
+ * 
+ * @author uiltc
+ * @version 1.0
+ */
 public class Network {
-    private static final String OPEN_BRACKET = "(";
-    private static final String CLOSE_BRACKET = ")";
-    private static final String SEPARATOR = " ";
 
     private final Graph graph;
 
+    /**
+     * Creates a new instance of a Network with two levels.
+     * 
+     * @param root     IP value that is connected to all children
+     * @param children a list of IPs that are connected to the root
+     */
     public Network(final IP root, final List<IP> children) {
-        this.graph = new Graph(compileEdges(root, children));
+        // Create edges between the root and every child
+        List<Edge> edges = new ArrayList<>();
+        for (int i = 0; i < children.size(); i++) {
+            edges.add(new Edge(root, children.get(i)));
+        }
+
+        this.graph = new Graph(edges);
     }
 
     public Network(final String bracketNotation) throws ParseException {
         this.graph = new Graph(fromString(bracketNotation));
     }
 
-    private List<Edge> compileEdges(IP root, List<IP> children) {
+    private List<Edge> fromString(String bracket) throws ParseException {
         List<Edge> edges = new ArrayList<>();
 
-        for (int i = 0; i < children.size(); i++) {
-            edges.add(new Edge(root, children.get(i)));
-        }
-
-        return edges;
-    }
-
-    private List<Edge> fromString(String s) throws ParseException {
         int i = 1;
-        List<Edge> edges = new ArrayList<>();
-        IP root = new IP(s.substring(i, ipLength(s)));
-        i += ipLength(s);
+        IP source = new IP(bracket.substring(i, ipLength(bracket)));
+        i += ipLength(bracket);
 
-        while (i < s.length()) {
-            if (s.charAt(i) == OPEN_BRACKET.charAt(0)) {
-                String temp = s.substring(i);
-                edges.addAll(fromString(findInnerString(temp)));
-                edges.add(new Edge(root, edges.get(edges.size() - 1).getSource()));
-                i += findInnerString(temp).length() + 2;
+        while (i < bracket.length()) {
+            if (bracket.charAt(i) == ParseException.getOpenBracket().charAt(0)) {
+                String remaining = bracket.substring(i);
+
+                String newBracket = findInnerString(remaining);
+                edges.addAll(fromString(newBracket));
+                IP destination = edges.get(edges.size() - 1).getNodes().get(0);
+                edges.add(new Edge(source, destination));
+
+                i += newBracket.length() + 2;
             } else {
-                String temp = s.substring(i);
-                edges.add(new Edge(root, new IP(s.substring(i, ipLength(temp) + i))));
-                i += ipLength(temp);
+                String remaining = bracket.substring(i);
+                IP destination = new IP(bracket.substring(i, ipLength(remaining) + i));
+
+                edges.add(new Edge(source, destination));
+                i += ipLength(remaining);
             }
 
             i++;
@@ -60,31 +71,28 @@ public class Network {
         return edges;
     }
 
-    private String findInnerString(String s) {
+    private String findInnerString(String s) throws ParseException {
         int flag = 0;
 
         for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) == OPEN_BRACKET.charAt(0)) {
+            if (s.charAt(i) == ParseException.getOpenBracket().charAt(0)) {
                 flag++;
-            } else if (s.charAt(i) == CLOSE_BRACKET.charAt(0)) {
+            } else if (s.charAt(i) == ParseException.getCloseBracket().charAt(0)) {
                 flag--;
             }
 
             if (flag == 0) {
-                // begin - inclusive (next char after "("), end - exclusive (exactly where ")"
-                // is seen)
-                return s.substring(0, i + 1);
+                return s.substring(1, i);
             }
         }
 
-        // if flag not 0 there is an error
-
-        return s.substring(1, s.length());
+        throw new ParseException(ExceptionMessage.INVALID_BRACKET_NOTATION.toString());
     }
 
     private int ipLength(String s) {
         for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) == SEPARATOR.charAt(0) || s.charAt(i) == CLOSE_BRACKET.charAt(0)) {
+            if (s.charAt(i) == ParseException.getNetworkSeparator().charAt(0)
+                    || s.charAt(i) == ParseException.getCloseBracket().charAt(0)) {
                 return i;
             }
         }
@@ -96,7 +104,7 @@ public class Network {
         Graph graph = new Graph(this.graph.getEdges());
         graph.addEdges(subnet.graph.getEdges());
 
-        if (graph.isCyclic()) {
+        if (graph.isLooped(graph.getEdges().get(0).getNodes().get(0), null, new ArrayList<>())) {
             return false;
         }
 
@@ -106,9 +114,13 @@ public class Network {
 
     public List<IP> list() {
         List<IP> ips = new ArrayList<>();
-        Set<IP> vertices = graph.getAdjMap().keySet();
-        for (IP vertex : vertices) {
-            ips.add(vertex);
+
+        for (Edge edge : this.graph.getEdges()) {
+            for (IP ip : edge.getNodes()) {
+                if (!ips.contains(ip)) {
+                    ips.add(ip);
+                }
+            }
         }
 
         Collections.sort(ips);
@@ -116,84 +128,67 @@ public class Network {
     }
 
     public boolean connect(final IP ip1, final IP ip2) {
-        this.graph.addEdge(new Edge(ip1, ip2));
+        Graph graph = new Graph(this.graph.getEdges());
+        graph.addEdge(new Edge(this.graph.contains(ip1), this.graph.contains(ip2)));
+
+        if (graph.isLooped(graph.getEdges().get(0).getNodes().get(0), null, new ArrayList<>())) {
+            return false;
+        }
+
+        this.graph.addEdge(new Edge(this.graph.contains(ip1), this.graph.contains(ip2)));
         return true;
     }
 
     public boolean disconnect(final IP ip1, final IP ip2) {
-        this.graph.removeEdge(ip1, ip2);
-        return true;
-    }
+        List<IP> ip = List.of(this.graph.contains(ip1), this.graph.contains(ip2));
 
-    public boolean contains(final IP ip) {
-        Set<IP> vertices = graph.getAdjMap().keySet();
-        for (IP vertex : vertices) {
-            if (vertex.compareTo(ip) == 0) {
-                return true;
-            }
+        if (ip.get(0) != null && ip.get(1) != null) {
+            this.graph.removeEdge(ip.get(0), ip.get(1));
+            return true;
         }
 
         return false;
     }
 
+    public boolean contains(final IP ip) {
+        return (this.graph.contains(ip) != null) ? true : false;
+    }
+
     public int getHeight(final IP root) {
-        Set<IP> vertices = graph.getAdjMap().keySet();
-        for (IP vertex : vertices) {
-            if (vertex.compareTo(root) == 0) {
-                Tree tree = new Tree(vertex, graph);
-                return tree.getHeight(tree.getRoot());
-            }
+        IP ip = this.graph.contains(root);
+
+        if (ip != null) {
+            return this.graph.getHeight(ip, new ArrayList<>());
         }
 
         return 0;
     }
 
     public List<List<IP>> getLevels(final IP root) {
-        Set<IP> vertices = graph.getAdjMap().keySet();
-        for (IP vertex : vertices) {
-            if (vertex.compareTo(root) == 0) {
-                Tree tree = new Tree(vertex, graph);
-                List<List<IP>> levels = tree.getLevels(tree.getRoot(), 0, new ArrayList<>());
-                return sortLevels(levels);
-            }
+        IP ip = this.graph.contains(root);
+
+        if (ip != null) {
+            return this.graph.getLevels(ip, new ArrayList<>(), 0, new ArrayList<>());
         }
 
         return null;
     }
 
-    private List<List<IP>> sortLevels(List<List<IP>> levels) {
-        for (int i = 0; i < levels.size(); i++) {
-            Collections.sort(levels.get(i));
-        }
-
-        return levels;
-    }
-
     public List<IP> getRoute(final IP start, final IP end) {
-        IP s = null;
-        IP e = null;
+        List<IP> ip = List.of(this.graph.contains(start), this.graph.contains(end));
 
-        Set<IP> vertices = graph.getAdjMap().keySet();
-        for (IP vertex : vertices) {
-            if (vertex.compareTo(start) == 0) {
-                s = vertex;
-            }
-
-            if (vertex.compareTo(end) == 0) {
-                e = vertex;
-            }
+        if (ip.get(0) != null && ip.get(1) != null) {
+            return this.graph.getRoute(ip.get(0), ip.get(1), new ArrayList<>(), new ArrayList<>());
         }
 
-        return graph.getRoute(s, e, new ArrayList<>(), new ArrayList<>());
+        return null;
     }
 
     public String toString(IP root) {
-        Set<IP> vertices = graph.getAdjMap().keySet();
-        for (IP vertex : vertices) {
-            if (vertex.compareTo(root) == 0) {
-                Tree tree = new Tree(vertex, graph);
-                return tree.toStringRecursion(tree.getRoot());
-            }
+        root = this.graph.contains(root);
+
+        if (root != null) {
+            return this.graph.toString(root, new ArrayList<>());
         }
 
         return null;

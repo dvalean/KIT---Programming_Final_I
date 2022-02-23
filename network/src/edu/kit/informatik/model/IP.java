@@ -18,8 +18,6 @@ import edu.kit.informatik.resources.ExceptionMessage;
 public class IP implements Comparable<IP> {
     // A regular expression for the format of any IPv4 address.
     private static final String REGEX = "^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\\.(?!$)|$)){4}$";
-    // Separator between Integers of an IP address
-    private static final String SEPARATOR = ".";
 
     private final List<Integer> ipValues;
 
@@ -47,7 +45,7 @@ public class IP implements Comparable<IP> {
 
     // Converts a String into an IP
     private void fromString(String s) {
-        String ipStringValues[] = s.split("\\" + SEPARATOR);
+        String ipStringValues[] = s.split("\\" + ParseException.getIpSeparator());
 
         for (String string : ipStringValues) {
             this.ipValues.add(Integer.parseInt(string));
@@ -57,11 +55,13 @@ public class IP implements Comparable<IP> {
     // Converts an IP into a String
     @Override
     public String toString() {
-        return this.ipValues.stream().map(Object::toString).collect(Collectors.joining(SEPARATOR));
+        return this.ipValues.stream().map(Object::toString)
+                .collect(Collectors.joining(ParseException.getIpSeparator()));
     }
 
     // Compares this instance of IP with another IP
-    // Returns 1 - if this is bigger, -1 - if this is smaller and 0 - if both are equal
+    // Returns 1 - if this is bigger, -1 - if this is smaller and 0 - if both are
+    // equal
     @Override
     public int compareTo(IP o) {
         for (int i = 0; i < this.ipValues.size(); i++) {
@@ -87,7 +87,7 @@ public class IP implements Comparable<IP> {
         if (compareTo(ip) == 0) {
             return true;
         }
-        
+
         return false;
     }
 }
