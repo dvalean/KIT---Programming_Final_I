@@ -54,7 +54,12 @@ public class PrivateTest {
 
         root = new IP("0.0.0.0");
         System.out.println(network.connect(new IP("3.0.0.0"),new IP("4.0.0.0")));
-        System.out.println(network.toString(root));
+        System.out.println(network.toString(root) + "\n");
 
+        // network: list, getLevels, getHeight, getRoute
+        System.out.println(network.list().toString());
+        System.out.println(network.getLevels(root).toString());
+        System.out.println(network.getHeight(root));
+        System.out.println(network.getRoute(new IP("2.0.0.0"), new IP("5.0.0.0")));
     }
 }

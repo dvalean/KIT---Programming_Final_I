@@ -22,18 +22,38 @@ public class ParseException extends Exception {
         super(message);
     }
 
+    /**
+     * Gets the CloseBracket String.
+     * 
+     * @return String value
+     */
     public static String getCloseBracket() {
         return CLOSE_BRACKET;
     }
 
+    /**
+     * Gets the OpenBracket String.
+     * 
+     * @return String value
+     */
     public static String getOpenBracket() {
         return OPEN_BRACKET;
     }
 
+    /**
+     * Gets the separator between IPs in a Network.
+     * 
+     * @return String value
+     */
     public static String getNetworkSeparator() {
         return NETWORK_SEPARATOR;
     }
 
+    /**
+     * Gets the separator between integers in an IP.
+     * 
+     * @return String value
+     */
     public static String getIpSeparator() {
         return IP_SEPARATOR;
     }
