@@ -151,13 +151,15 @@ public class Graph {
         return lvls;
     }
 
-    public void removeEdge(IP ip1, IP ip2) {
+    public boolean removeEdge(IP ip1, IP ip2) {
         for (Edge edge : this.edges) {
             if ((new HashSet<>(edge.getNodes())).equals(new HashSet<>(List.of(ip1, ip2)))) {
                 this.edges.remove(edge);
-                return;
+                return true;
             }
         }
+
+        return false;
     }
 
     public List<IP> getRoute(IP start, IP end, List<IP> visited, List<IP> cpath) {

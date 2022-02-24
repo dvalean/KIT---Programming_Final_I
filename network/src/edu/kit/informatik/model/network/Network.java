@@ -143,8 +143,7 @@ public class Network {
         List<IP> ip = List.of(this.graph.contains(ip1), this.graph.contains(ip2));
 
         if (ip.get(0) != null && ip.get(1) != null) {
-            this.graph.removeEdge(ip.get(0), ip.get(1));
-            return true;
+            return this.graph.removeEdge(ip.get(0), ip.get(1));
         }
 
         return false;
