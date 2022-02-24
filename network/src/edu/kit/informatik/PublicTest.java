@@ -38,7 +38,7 @@ public class PublicTest {
         System.out.println(network.add(new Network("(85.193.148.81 34.49.145.239 231.189.0.127 141.255.1.133)")));
         // true
         System.out.println(
-                network.add(new Network("(231.189.0.127 252.29.23.0" + " 116.132.83.77 39.20.222.120 77.135.84.171")));
+                network.add(new Network("(231.189.0.127 252.29.23.0" + " 116.132.83.77 39.20.222.120 77.135.84.171)")));
 
         // "Change" root and call toString, getHeight and getLevels again
         root = new IP("85.193.148.81");

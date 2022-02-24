@@ -1,7 +1,6 @@
 package edu.kit.informatik.model.network.graph;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import edu.kit.informatik.model.IP;
@@ -25,7 +24,6 @@ public class Edge {
         this.ip = new ArrayList<>();
         this.ip.add(source);
         this.ip.add(destination);
-        Collections.sort(this.ip);
     }
 
     public List<IP> getNodes() {
