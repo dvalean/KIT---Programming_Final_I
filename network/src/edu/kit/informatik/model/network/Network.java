@@ -36,10 +36,17 @@ public class Network {
         this.graph = new Graph(edges);
     }
 
+    /**
+     * Creates a new instance of a Network from BracketNotaion.
+     * 
+     * @param bracketNotation String value of a Network
+     * @throws ParseException if the String value isn't a valid Network
+     */
     public Network(final String bracketNotation) throws ParseException {
         this.graph = new Graph(fromString(findInnerString(bracketNotation)));
     }
 
+    // Main method to converting from String to Graph
     private List<Edge> fromString(String bracket) throws ParseException {
         List<Edge> edges = new ArrayList<>();
 
@@ -71,6 +78,7 @@ public class Network {
         return edges;
     }
 
+    // Finds the inner String between brackets
     private String findInnerString(String s) throws ParseException {
         int flag = 0;
 
@@ -89,6 +97,7 @@ public class Network {
         throw new ParseException(ExceptionMessage.INVALID_BRACKET_NOTATION.toString());
     }
 
+    // Determines the length of an IP in a String
     private int ipLength(String s) {
         for (int i = 0; i < s.length(); i++) {
             if (s.charAt(i) == ParseException.getNetworkSeparator().charAt(0)
@@ -100,6 +109,13 @@ public class Network {
         return s.length();
     }
 
+    /**
+     * Determines if a sub Network can be added to this Network.
+     * 
+     * @param subnet the sub Network to be added
+     * @return true - if the subnet can and was added, false - otherwise
+     * @throws ParseException
+     */
     public boolean add(final Network subnet) throws ParseException {
         Graph graph = new Graph(this.graph.getEdges());
         graph.addEdges(subnet.graph.getEdges());
@@ -112,6 +128,11 @@ public class Network {
         return true;
     }
 
+    /**
+     * Gets all the IPs in this Network in a sorted list form.
+     * 
+     * @return a list of IPs
+     */
     public List<IP> list() {
         List<IP> ips = new ArrayList<>();
 
@@ -127,6 +148,13 @@ public class Network {
         return ips;
     }
 
+    /**
+     * Connects two IPs in the Network.
+     * 
+     * @param ip1 first IP
+     * @param ip2 second IP
+     * @return true - if the IPs can and were connected, false - otherwise
+     */
     public boolean connect(final IP ip1, final IP ip2) {
         Graph graph = new Graph(this.graph.getEdges());
         graph.addEdge(new Edge(this.graph.contains(ip1), this.graph.contains(ip2)));
@@ -139,6 +167,14 @@ public class Network {
         return true;
     }
 
+    /**
+     * Disconnects two IPs in the Network.
+     * 
+     * @param ip1 first IP
+     * @param ip2 second IP
+     * @return true - if the IPs can and were disconnected (deletes the IPs that
+     *         have no more connections), false - otherwise
+     */
     public boolean disconnect(final IP ip1, final IP ip2) {
         List<IP> ip = List.of(this.graph.contains(ip1), this.graph.contains(ip2));
 
@@ -149,10 +185,23 @@ public class Network {
         return false;
     }
 
+    /**
+     * Determines if the Network containes an IP.
+     * 
+     * @param ip the IP to verify
+     * @return true - if it the IP is contained and false - if the IP is not
+     *         contained
+     */
     public boolean contains(final IP ip) {
         return (this.graph.contains(ip) != null) ? true : false;
     }
 
+    /**
+     * Determines the height of the Network from a specific IP.
+     * 
+     * @param root where the calculation begins
+     * @return integer value of the height
+     */
     public int getHeight(final IP root) {
         IP ip = this.graph.contains(root);
 
@@ -163,6 +212,12 @@ public class Network {
         return 0;
     }
 
+    /**
+     * Gets the levels of the Network.
+     * 
+     * @param root where the calculation begins
+     * @return a list of lists* of IPs where every list* represents another level
+     */
     public List<List<IP>> getLevels(final IP root) {
         IP ip = this.graph.contains(root);
 
@@ -173,6 +228,14 @@ public class Network {
         return null;
     }
 
+    /**
+     * Gets the route from IP (start) to IP (end).
+     * 
+     * @param start where the route begins
+     * @param end   where the route ends
+     * @return a list of IPs to get from start to end (null if any of the IPs are
+     *         not in the graph)
+     */
     public List<IP> getRoute(final IP start, final IP end) {
         List<IP> ip = List.of(this.graph.contains(start), this.graph.contains(end));
 
@@ -183,6 +246,12 @@ public class Network {
         return null;
     }
 
+    /**
+     * Converts the Network to BracketNotation String.
+     * 
+     * @param root the root of the Network
+     * @return String value (BracketNotation)
+     */
     public String toString(IP root) {
         root = this.graph.contains(root);
 
