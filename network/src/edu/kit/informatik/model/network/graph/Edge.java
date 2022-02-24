@@ -26,10 +26,21 @@ public class Edge {
         this.ip.add(destination);
     }
 
+    /**
+     * Gets the IPs that are connected by the Edge.
+     * 
+     * @return a list of IPs
+     */
     public List<IP> getNodes() {
         return this.ip;
     }
 
+    /**
+     * Gets the destination of the Edge.
+     * 
+     * @param source IP value where the Edge starts
+     * @return IP value where the Edge will end 
+     */
     public IP getDestination(IP source) {
         for (IP ip : this.ip) {
             if (!ip.equals(source)) {
