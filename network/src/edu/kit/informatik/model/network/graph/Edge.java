@@ -1,6 +1,7 @@
 package edu.kit.informatik.model.network.graph;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import edu.kit.informatik.model.IP;
@@ -39,7 +40,7 @@ public class Edge {
      * Gets the destination of the Edge.
      * 
      * @param source IP value where the Edge starts
-     * @return IP value where the Edge will end 
+     * @return IP value where the Edge will end
      */
     public IP getDestination(IP source) {
         for (IP ip : this.ip) {
@@ -59,10 +60,6 @@ public class Edge {
         }
 
         Edge edge = (Edge) o;
-        if (this.ip.equals(edge.getNodes())) {
-            return true;
-        }
-
-        return false;
+        return (new HashSet<>(this.ip).equals(new HashSet<>(edge.ip))) ? true : false;
     }
 }

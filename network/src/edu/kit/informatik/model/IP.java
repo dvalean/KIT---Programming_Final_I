@@ -28,7 +28,11 @@ public class IP implements Comparable<IP> {
      * @throws ParseException if the String value isn't a valid IP address
      */
     public IP(final String pointNotation) throws ParseException {
-        if (pointNotation == null || !isValidIP(pointNotation)) {
+        if (pointNotation == null) {
+            throw new ParseException(ExceptionMessage.NULL_IPV4.toString());
+        }
+
+        if (!isValidIP(pointNotation)) {
             throw new ParseException(ExceptionMessage.INVALID_IPV4.toString());
         }
 

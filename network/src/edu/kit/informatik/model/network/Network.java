@@ -27,6 +27,15 @@ public class Network {
      * @param children a list of IPs that are connected to the root
      */
     public Network(final IP root, final List<IP> children) {
+        if (root == null || children == null) {
+            throw new RuntimeException(ExceptionMessage.NULL_NETWORK_VALUES.toString());
+        }
+
+        if (children.contains(root)
+                || children.stream().distinct().toArray().length != children.stream().toArray().length) {
+            throw new RuntimeException(ExceptionMessage.INVALID_NETWORK_VALUES.toString());
+        }
+
         // Create edges between the root and every child
         List<Edge> edges = new ArrayList<>();
         for (int i = 0; i < children.size(); i++) {
@@ -43,6 +52,10 @@ public class Network {
      * @throws ParseException if the String value isn't a valid Network
      */
     public Network(final String bracketNotation) throws ParseException {
+        if (bracketNotation == null) {
+            throw new ParseException(ExceptionMessage.NULL_BRACKET_NOTATION.toString());
+        }
+
         this.graph = new Graph(fromString(findInnerString(bracketNotation)));
     }
 
@@ -117,6 +130,10 @@ public class Network {
      * @throws ParseException
      */
     public boolean add(final Network subnet) throws ParseException {
+        if (subnet == null || this.graph.hasSubgraph(subnet.graph)) {
+            return false;
+        }
+
         Graph graph = new Graph(this.graph.getEdges());
         graph.addEdges(subnet.graph.getEdges());
 
@@ -156,14 +173,24 @@ public class Network {
      * @return true - if the IPs can and were connected, false - otherwise
      */
     public boolean connect(final IP ip1, final IP ip2) {
+        if (this.graph.contains(ip1) == null || this.graph.contains(ip2) == null) {
+            return false;
+        }
+
+        List<IP> ips = List.of(this.graph.contains(ip1), this.graph.contains(ip2));
+
+        if (this.graph.hasSubgraph(new Graph(List.of(new Edge(ips.get(0), ips.get(1)))))) {
+            return false;
+        }
+
         Graph graph = new Graph(this.graph.getEdges());
-        graph.addEdge(new Edge(this.graph.contains(ip1), this.graph.contains(ip2)));
+        graph.addEdge(new Edge(ips.get(0), ips.get(1)));
 
         if (graph.isLooped(graph.getEdges().get(0).getNodes().get(0), null, new ArrayList<>())) {
             return false;
         }
 
-        this.graph.addEdge(new Edge(this.graph.contains(ip1), this.graph.contains(ip2)));
+        this.graph.addEdge(new Edge(ips.get(0), ips.get(1)));
         return true;
     }
 
@@ -176,13 +203,19 @@ public class Network {
      *         have no more connections), false - otherwise
      */
     public boolean disconnect(final IP ip1, final IP ip2) {
-        List<IP> ip = List.of(this.graph.contains(ip1), this.graph.contains(ip2));
-
-        if (ip.get(0) != null && ip.get(1) != null) {
-            return this.graph.removeEdge(ip.get(0), ip.get(1));
+        if (this.graph.contains(ip1) == null || this.graph.contains(ip2) == null) {
+            return false;
         }
 
-        return false;
+        List<IP> ips = List.of(this.graph.contains(ip1), this.graph.contains(ip2));
+
+        Graph graph = new Graph(this.graph.getEdges());
+        graph.removeEdge(ips.get(0), ips.get(1));
+        if (graph.getEdges().isEmpty()) {
+            return false;
+        }
+
+        return this.graph.removeEdge(ips.get(0), ips.get(1));
     }
 
     /**
@@ -203,10 +236,12 @@ public class Network {
      * @return integer value of the height
      */
     public int getHeight(final IP root) {
-        IP ip = this.graph.contains(root);
+        if (root != null) {
+            IP ip = this.graph.contains(root);
 
-        if (ip != null) {
-            return this.graph.getHeight(ip, new ArrayList<>());
+            if (ip != null) {
+                return this.graph.getHeight(ip, new ArrayList<>());
+            }
         }
 
         return 0;
@@ -219,13 +254,9 @@ public class Network {
      * @return a list of lists* of IPs where every list* represents another level
      */
     public List<List<IP>> getLevels(final IP root) {
-        IP ip = this.graph.contains(root);
-
-        if (ip != null) {
-            return this.graph.getLevels(ip, new ArrayList<>(), 0, new ArrayList<>());
-        }
-
-        return null;
+        return (this.graph.contains(root) != null)
+                ? this.graph.getLevels(this.graph.contains(root), new ArrayList<>(), 0, new ArrayList<>())
+                : List.of();
     }
 
     /**
@@ -237,13 +268,10 @@ public class Network {
      *         not in the graph)
      */
     public List<IP> getRoute(final IP start, final IP end) {
-        List<IP> ip = List.of(this.graph.contains(start), this.graph.contains(end));
-
-        if (ip.get(0) != null && ip.get(1) != null) {
-            return this.graph.getRoute(ip.get(0), ip.get(1), new ArrayList<>(), new ArrayList<>());
-        }
-
-        return null;
+        return (this.graph.contains(start) != null && this.graph.contains(end) != null)
+                ? this.graph.getRoute(this.graph.contains(start), this.graph.contains(end), new ArrayList<>(),
+                        new ArrayList<>())
+                : List.of();
     }
 
     /**
@@ -253,12 +281,10 @@ public class Network {
      * @return String value (BracketNotation)
      */
     public String toString(IP root) {
-        root = this.graph.contains(root);
-
-        if (root != null) {
-            return this.graph.toString(root, new ArrayList<>());
+        if (this.graph.contains(root) != null) {
+            return this.graph.toString(this.graph.contains(root), new ArrayList<>());
         }
 
-        return null;
+        return "";
     }
 }

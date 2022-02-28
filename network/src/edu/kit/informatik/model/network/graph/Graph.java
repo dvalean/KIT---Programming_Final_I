@@ -100,6 +100,10 @@ public class Graph {
      * @return back the IP if it is contained and null otherwise
      */
     public IP contains(IP ip) {
+        if (ip == null) {
+            return null;
+        }
+
         for (Edge e : this.edges) {
             for (IP i : e.getNodes()) {
                 if (i.equals(ip)) {
@@ -138,6 +142,31 @@ public class Graph {
         }
 
         return false;
+    }
+
+    public boolean hasSubgraph(Graph graph) {
+        if (graph == this) {
+            return true;
+        }
+
+        if (graph.edges.size() > this.edges.size()) {
+            return false;
+        }
+
+        for (int i = 0; i < graph.edges.size(); i++) {
+            boolean flag = false;
+            for (int j = 0; j < this.edges.size(); j++) {
+                if (this.edges.get(j).equals(graph.edges.get(i))) {
+                    flag = true;
+                }
+            }
+
+            if (!flag) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

@@ -29,7 +29,11 @@ public class PrivateTest {
 
         // network: add, connect, disconnect
         root = new IP("0.0.0.0");
-        network = new Network(root, List.of(new IP("1.0.0.0"), new IP("2.0.0.0"), new IP("3.0.0.0")));
+        network = new Network(root, List.of(new IP("1.0.0.0"), new IP("3.0.0.0"), new IP("2.0.0.0")));
+        System.out.println(network.toString(root));
+
+        System.out.println(network
+                .add(new Network(new IP("0.0.0.0"), List.of(new IP("1.0.0.0"), new IP("2.0.0.0"), new IP("3.0.0.0")))));
         System.out.println(network.toString(root));
 
         System.out.println(network.add(new Network(new IP("0.0.0.0"), List.of(new IP("4.0.0.0")))));
@@ -40,20 +44,20 @@ public class PrivateTest {
 
         System.out.println(network.add(new Network(new IP("3.0.0.0"), List.of(new IP("6.0.0.0"), new IP("5.0.0.0")))));
         System.out.println(network.toString(root));
-        
-        System.out.println(network.connect(new IP("3.0.0.0"),new IP("4.0.0.0")));
+
+        System.out.println(network.connect(new IP("3.0.0.0"), new IP("4.0.0.0")));
         System.out.println(network.toString(root));
 
-        System.out.println(network.disconnect(new IP("3.0.0.0"),new IP("4.0.0.0")));
+        System.out.println(network.disconnect(new IP("3.0.0.0"), new IP("4.0.0.0")));
         System.out.println(network.toString(root));
 
-        System.out.println(network.disconnect(new IP("0.0.0.0"),new IP("3.0.0.0")));
+        System.out.println(network.disconnect(new IP("0.0.0.0"), new IP("3.0.0.0")));
         System.out.println(network.toString(root));
         root = new IP("3.0.0.0");
         System.out.println(network.toString(root));
 
         root = new IP("0.0.0.0");
-        System.out.println(network.connect(new IP("3.0.0.0"),new IP("4.0.0.0")));
+        System.out.println(network.connect(new IP("3.0.0.0"), new IP("4.0.0.0")));
         System.out.println(network.toString(root) + "\n");
 
         // network: list, getLevels, getHeight, getRoute
