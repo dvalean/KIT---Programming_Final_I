@@ -1,7 +1,6 @@
 package edu.kit.informatik.model.network.graph;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import edu.kit.informatik.model.IP;
@@ -60,6 +59,19 @@ public class Edge {
         }
 
         Edge edge = (Edge) o;
-        return (new HashSet<>(this.ip).equals(new HashSet<>(edge.ip))) ? true : false;
+        for (int i = 0; i < this.ip.size(); i++) {
+            boolean flag = false;
+            for (int j = 0; j < edge.ip.size(); j++) {
+                if (this.ip.get(i).equals(edge.ip.get(j))) {
+                    flag = true;
+                }
+            }
+
+            if (!flag) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

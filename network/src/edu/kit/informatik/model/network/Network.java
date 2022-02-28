@@ -57,6 +57,10 @@ public class Network {
         }
 
         this.graph = new Graph(fromString(findInnerString(bracketNotation)));
+
+        if (this.graph.getEdges().size() == 0) {
+            throw new ParseException(ExceptionMessage.INVALID_BRACKET_NOTATION.toString());
+        }
     }
 
     // Main method to converting from String to Graph
@@ -173,7 +177,7 @@ public class Network {
      * @return true - if the IPs can and were connected, false - otherwise
      */
     public boolean connect(final IP ip1, final IP ip2) {
-        if (this.graph.contains(ip1) == null || this.graph.contains(ip2) == null) {
+        if (this.graph.contains(ip1) == null || this.graph.contains(ip2) == null || ip1.equals(ip2)) {
             return false;
         }
 
