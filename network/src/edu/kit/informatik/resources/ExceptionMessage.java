@@ -18,7 +18,8 @@ public enum ExceptionMessage {
     /** Message for an invalid bracket notation */
     INVALID_BRACKET_NOTATION("an invalid bracket notation for a network was entered."),
     /** Message for a null bracket notation */
-    NULL_BRACKET_NOTATION("a null bracket notaion for a network was entered.");
+    NULL_BRACKET_NOTATION("a null bracket notaion for a network was entered."),
+    INVALID_EDGE("invalid edge.");
 
     private static final String PREFIX = "Error, ";
     private final String message;

@@ -52,13 +52,17 @@ public class Network {
      * @throws ParseException if the String value isn't a valid Network
      */
     public Network(final String bracketNotation) throws ParseException {
-        if (bracketNotation == null) {
-            throw new ParseException(ExceptionMessage.NULL_BRACKET_NOTATION.toString());
-        }
-
-        this.graph = new Graph(fromString(findInnerString(bracketNotation)));
-
-        if (this.graph.getEdges().size() == 0) {
+        try {
+            if (bracketNotation == null) {
+                throw new ParseException(ExceptionMessage.NULL_BRACKET_NOTATION.toString());
+            }
+    
+            this.graph = new Graph(fromString(findInnerString(bracketNotation)));
+    
+            if (this.graph.getEdges().size() == 0) {
+                throw new ParseException(ExceptionMessage.INVALID_BRACKET_NOTATION.toString());
+            }            
+        } catch (Exception e) {
             throw new ParseException(ExceptionMessage.INVALID_BRACKET_NOTATION.toString());
         }
     }
@@ -78,14 +82,36 @@ public class Network {
                 String newBracket = findInnerString(remaining);
                 edges.addAll(fromString(newBracket));
                 IP destination = edges.get(edges.size() - 1).getNodes().get(0);
-                edges.add(new Edge(source, destination));
+
+                if (source.equals(destination)) {
+                    throw new ParseException(ExceptionMessage.INVALID_EDGE.toString());
+                }
+
+                Edge edge = new Edge(source, destination);
+
+                if (edges.contains(edge)) {
+                    throw new ParseException(ExceptionMessage.INVALID_EDGE.toString());
+                }
+
+                edges.add(edge);
 
                 i += newBracket.length() + 2;
             } else {
                 String remaining = bracket.substring(i);
                 IP destination = new IP(bracket.substring(i, ipLength(remaining) + i));
 
-                edges.add(new Edge(source, destination));
+                if (source.equals(destination)) {
+                    throw new ParseException(ExceptionMessage.INVALID_EDGE.toString());
+                }
+                
+                Edge edge = new Edge(source, destination);
+
+                if (edges.contains(edge)) {
+                    throw new ParseException(ExceptionMessage.INVALID_EDGE.toString());
+                }
+
+                edges.add(edge);
+                
                 i += ipLength(remaining);
             }
 
