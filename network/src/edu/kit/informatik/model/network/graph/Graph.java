@@ -77,14 +77,14 @@ public class Graph {
 
     // Makes two IPs adjacent and adds them to the adjacency map
     private void setAdjacent(IP source, IP destination) {
-        source = contains(source);
-        destination = contains(destination);
+        IP src = contains(source);
+        IP dest = contains(destination);
 
-        if (!this.adjacency.containsKey(source)) {
-            this.adjacency.put(source, new ArrayList<>());
+        if (!this.adjacency.containsKey(src)) {
+            this.adjacency.put(src, new ArrayList<>());
         }
 
-        this.adjacency.get(source).add(destination);
+        this.adjacency.get(src).add(dest);
     }
 
     // Gets the adjacency map of this graph
@@ -144,6 +144,12 @@ public class Graph {
         return false;
     }
 
+    /**
+     * Method that determines if a graph is a subgrapth of this particular graph.
+     * 
+     * @param graph that is being checked
+     * @return true if it is a subgraph and false otherwise
+     */
     public boolean hasSubgraph(Graph graph) {
         if (graph == this) {
             return true;
@@ -197,10 +203,11 @@ public class Graph {
      * @param root    where the calculation begins
      * @param visited what IPs were already checked
      * @param lvl     current level
-     * @param lvls    already known levels
+     * @param levels  already known levels
      * @return a list of lists* of IPs where every list* is a level
      */
-    public List<List<IP>> getLevels(IP root, List<IP> visited, int lvl, List<List<IP>> lvls) {
+    public List<List<IP>> getLevels(IP root, List<IP> visited, int lvl, List<List<IP>> levels) {
+        List<List<IP>> lvls = levels;
         if (!(lvl < lvls.size())) {
             lvls.add(new ArrayList<>());
         }
@@ -241,13 +248,14 @@ public class Graph {
     /**
      * A recursive method that determines the route from IP (start) to IP (end).
      * 
-     * @param start   where the route begins
-     * @param end     where the route ends
-     * @param visited what IPs were already checked
-     * @param cpath   current path
+     * @param start       where the route begins
+     * @param end         where the route ends
+     * @param visited     what IPs were already checked
+     * @param currentpath current path
      * @return a list of IPs to get from start to end
      */
-    public List<IP> getRoute(IP start, IP end, List<IP> visited, List<IP> cpath) {
+    public List<IP> getRoute(IP start, IP end, List<IP> visited, List<IP> currentpath) {
+        List<IP> cpath = currentpath;
         cpath.add(start);
         visited.add(start);
         List<IP> adjacent = getAdjacency().get(start);

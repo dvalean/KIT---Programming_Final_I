@@ -41,9 +41,9 @@ public class IP implements Comparable<IP> {
     }
 
     // Checks the validity of an IP
-    private boolean isValidIP(String IP) {
+    private boolean isValidIP(String ip) {
         Pattern pattern = Pattern.compile(REGEX);
-        Matcher matcher = pattern.matcher(IP);
+        Matcher matcher = pattern.matcher(ip);
         return matcher.matches();
     }
 
