@@ -93,6 +93,40 @@ public class Graph {
         return this.adjacency;
     }
 
+    @Override
+    public int hashCode() {
+        int result = 0;
+
+        for (Edge edge : edges) {
+            result += edge.hashCode();
+        }
+
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+
+        Graph graph = (Graph) o;
+        for (int i = 0; i < graph.edges.size(); i++) {
+            boolean flag = false;
+            for (int j = 0; j < this.edges.size(); j++) {
+                if (this.edges.get(j).equals(graph.edges.get(i))) {
+                    flag = true;
+                }
+            }
+
+            if (!flag) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     /**
      * Determines if this graph containes an IP.
      * 

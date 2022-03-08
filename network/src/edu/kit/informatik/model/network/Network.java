@@ -291,4 +291,23 @@ public class Network {
 
         return "";
     }
+
+    @Override
+    public int hashCode() {
+        return this.graph.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+
+        Network net = (Network) o;
+        if (this.graph.equals(net.graph)) {
+            return true;
+        }
+
+        return false;
+    }
 }

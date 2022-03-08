@@ -51,6 +51,11 @@ public class Edge {
         return null;
     }
 
+    @Override
+    public int hashCode() {
+        return ip.get(0).hashCode() + ip.get(1).hashCode();
+    }
+
     // Checks if this instance of Edge is equal with another Edge
     @Override
     public boolean equals(Object o) {

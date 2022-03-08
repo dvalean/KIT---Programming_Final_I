@@ -79,6 +79,18 @@ public class IP implements Comparable<IP> {
         return 0;
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+
+        for (Integer integer : ipValues) {
+            result = prime * result + integer.hashCode();
+        }
+
+        return result;
+    }
+
     // Checks if this isntance of IP is equal with another IP
     // Returns true if they are equal and false otherwise
     @Override
